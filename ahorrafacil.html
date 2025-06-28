@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ahorra Fácil - Elige tu Ahorro</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background-color: #111;
+    color: white;
+  }
+  .seccion {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .seccion.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+  }
+  .contenido {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+  }
+  h1, h2 {
+    color: #00ffc4;
+  }
+  button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #00ffc4;
+    color: black;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #00d1a1;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  label {
+    text-align: left;
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Pantalla de inicio -->
+<div id="pantallaInicio" class="seccion active" style="background-image: url(menu.jpg);">
+  <div class="overlay"></div>
+  <div class="contenido">
+    <h1>Ahorra Fácil</h1>
+    <button onclick="mostrarSeccion('corto')">Ahorro Corto (diario/semanal)</button>
+    <button onclick="mostrarSeccion('largo')">Ahorro Largo (mensual)</button>
+  </div>
+</div>
+
+<!-- Sección ahorro corto -->
+<div id="pantallaCorto" class="seccion" style="background-image: url(fondo.jpg);">
+  <div class="overlay"></div>
+  <div class="contenido">
+    <h2>Ahorro Corto</h2>
+    <label for="metaCorto">Meta de ahorro ($):</label>
+    <input type="number" id="metaCorto" placeholder="Cantidad que quieres ahorrar" />
+
+    <label for="diasCorto">Días a ahorrar:</label>
+    <input type="number" id="diasCorto" placeholder="Cuantos días ahorrarás" />
+
+    <button onclick="agregarCamposCorto()">Agregar días</button>
+    <div id="aportesCorto"></div>
+    <button onclick="simularCorto()">Simular ahorro</button>
+    <div id="resultadoCorto"></div>
+    <button onclick="volverInicio()">Volver</button>
+  </div>
+</div>
+
+<!-- Sección ahorro largo -->
+<div id="pantallaLargo" class="seccion" style="background-image: url(fondo.jpg);">
+  <div class="overlay"></div>
+  <div class="contenido">
+    <h2>Ahorro Largo</h2>
+    <label for="metaLargo">Meta de ahorro ($):</label>
+    <input type="number" id="metaLargo" placeholder="Cantidad que quieres ahorrar" />
+
+    <label for="ingresoLargo">Ingreso mensual ($):</label>
+    <input type="number" id="ingresoLargo" placeholder="Tu ingreso mensual" />
+
+    <label for="mesesLargo">Meses para ahorrar:</label>
+    <input type="number" id="mesesLargo" placeholder="Tiempo en meses" />
+
+    <button onclick="simularLargo()">Simular ahorro</button>
+    <div id="resultadoLargo"></div>
+    <button onclick="volverInicio()">Volver</button>
+  </div>
+</div>
+
+<script>
+function mostrarSeccion(tipo) {
+  document.getElementById('pantallaInicio').classList.remove('active');
+  document.getElementById('pantallaCorto').classList.remove('active');
+  document.getElementById('pantallaLargo').classList.remove('active');
+  if (tipo === 'corto') {
+    document.getElementById('pantallaCorto').classList.add('active');
+  } else {
+    document.getElementById('pantallaLargo').classList.add('active');
+  }
+}
+
+function volverInicio() {
+  document.getElementById('pantallaInicio').classList.add('active');
+  document.getElementById('pantallaCorto').classList.remove('active');
+  document.getElementById('pantallaLargo').classList.remove('active');
+}
+
+function agregarCamposCorto() {
+  const dias = parseInt(document.getElementById('diasCorto').value);
+  const container = document.getElementById('aportesCorto');
+  container.innerHTML = '';
+  for (let i = 1; i <= dias; i++) {
+    container.innerHTML += `<label>Día ${i}:</label><input type="number" class="aporteDia" placeholder="Aporte del día ${i}" />`;
+  }
+}
+
+function simularCorto() {
+  const meta = parseFloat(document.getElementById('metaCorto').value);
+  const aportes = document.querySelectorAll('.aporteDia');
+  let total = 0;
+  aportes.forEach(input => {
+    total += parseFloat(input.value) || 0;
+  });
+  let resultado = `Total ahorrado: $${total.toFixed(2)}<br>`;
+  resultado += total >= meta
+    ? '<span style="color:lightgreen">Meta alcanzada ✔</span>'
+    : '<span style="color:salmon">Meta no alcanzada ✖</span>';
+  document.getElementById('resultadoCorto').innerHTML = resultado;
+}
+
+function simularLargo() {
+  const meta = parseFloat(document.getElementById('metaLargo').value);
+  const ingreso = parseFloat(document.getElementById('ingresoLargo').value);
+  const meses = parseInt(document.getElementById('mesesLargo').value);
+  const necesario = meta / meses;
+  let resultado = `Debes ahorrar $${necesario.toFixed(2)} cada mes.<br>`;
+  resultado += ingreso >= necesario
+    ? '<span style="color:lightgreen">Tu ingreso es suficiente ✔</span>'
+    : '<span style="color:salmon">Tu ingreso NO es suficiente ✖</span>';
+  document.getElementById('resultadoLargo').innerHTML = resultado;
+}
+</script>
+
+</body>
+</html>
